@@ -1,0 +1,5 @@
+boto3==1.4.7
+future==0.16.0
+mock==2.0.0
+testfixtures==5.4.0
+flake8
