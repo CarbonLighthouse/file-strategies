@@ -1,0 +1,15 @@
+language: python
+python:
+  - 3.6
+notifications:
+  email:
+    recipients:
+      - commits+travis@carbonlighthouse.com
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+script:
+  - flake8 file_strategies
+  - coverage run --source=file_strategies -m unittest discover -b
+after_success:
+  - coveralls

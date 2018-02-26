@@ -104,5 +104,5 @@ def make_file(path):
             return S3File(url_obj.path, url_obj.netloc, boto3.resource('s3'))
 
         raise
-    except:
+    except Exception:
         raise ValueError('Path %s is not a valid file or s3 url' % path)
