@@ -2,13 +2,9 @@
 Strategy classes for access to various file sources (S3, Local, etc.)
 """
 
-from future import standard_library
-standard_library.install_aliases()
-
-from builtins import object
 import errno
 import os
-from io import BytesIO
+from io import StringIO
 from urllib.parse import urlparse
 
 import boto3
@@ -28,7 +24,7 @@ class LocalFile(object):
 
     def get_contents(self):
         with open(self.path) as stream:
-            return BytesIO(stream.read().encode('utf-8'))
+            return StringIO(stream.read())
 
     def put_contents(self, body):
         if not os.path.exists(os.path.dirname(self.path)):
@@ -92,6 +88,7 @@ def is_valid_url(url):
 def make_file(path):
     """
     Factory function for File strategies
+
     :param str path: A local relative path or s3://, file:// protocol urls
     :return:
     """
@@ -107,5 +104,5 @@ def make_file(path):
             return S3File(url_obj.path, url_obj.netloc, boto3.resource('s3'))
 
         raise
-    except Exception:
+    except:
         raise ValueError('Path %s is not a valid file or s3 url' % path)

@@ -6,7 +6,7 @@ import os
 import unittest
 
 from botocore.exceptions import ClientError
-from mock import MagicMock
+from unittest.mock import MagicMock
 from testfixtures import TempDirectory
 
 from file_strategies.file_strategies import LocalFile, S3File, make_file
@@ -38,7 +38,7 @@ class TestLocalFile(unittest.TestCase):
         subject = LocalFile(path)
 
         actual = subject.get_contents().getvalue()
-        expected = b'bar'
+        expected = 'bar'
 
         self.assertEqual(actual, expected)
 
