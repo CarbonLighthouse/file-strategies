@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='file-strategies',
-    version='1.0.0',
+    version='0.0.1',
     url='https://github.com/CarbonLighthouse/file-strategies',
     author='CarbonLighthouse',
     description='Strategy classes for access to various file sources (S3, local, etc.). '
@@ -14,6 +14,6 @@ setup(
     packages=find_packages(),
     python_requires='>=3',
     install_requires=[
-        'boto3==1.4.7'
+        'boto3>=1.4.7, <=1.6.0'
     ]
 )
