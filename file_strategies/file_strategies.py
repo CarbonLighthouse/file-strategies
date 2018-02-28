@@ -27,6 +27,13 @@ class LocalFile(object):
             return BytesIO(stream.read())
 
     def put_contents(self, body, encoding='utf-8'):
+        """
+        Args:
+            body (str || bytes): contents to put into file object
+            encoding (str): encoding that will be applied if the body is of type str in order
+                            to write the body as bytes
+
+        """
         if not os.path.exists(os.path.dirname(self.path)):
             try:
                 os.makedirs(os.path.dirname(self.path))
@@ -62,6 +69,13 @@ class S3File(object):
         return response['Body']
 
     def put_contents(self, body, encoding='utf-8'):
+        """
+        Args:
+            body (str || bytes): contents to put into file object
+            encoding (str): encoding that will be applied if the body is of type str in order
+                            to write the body as bytes
+
+        """
         if encoding and type(body) == str:
             body = body.encode(encoding)
         self.s3.Object(self.bucket, self.path).put(Body=body)
