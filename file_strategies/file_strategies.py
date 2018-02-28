@@ -4,7 +4,7 @@ Strategy classes for access to various file sources (S3, Local, etc.)
 
 import errno
 import os
-from io import StringIO
+from io import BytesIO
 from urllib.parse import urlparse
 
 import boto3
@@ -23,10 +23,17 @@ class LocalFile(object):
         self.url = self.protocol + path
 
     def get_contents(self):
-        with open(self.path) as stream:
-            return StringIO(stream.read())
+        with open(self.path, mode='rb') as stream:
+            return BytesIO(stream.read())
 
-    def put_contents(self, body):
+    def put_contents(self, body, encoding='utf-8'):
+        """
+        Args:
+            body (str || bytes): contents to put into file object
+            encoding (str): encoding that will be applied if the body is of type str in order
+                            to write the body as bytes
+
+        """
         if not os.path.exists(os.path.dirname(self.path)):
             try:
                 os.makedirs(os.path.dirname(self.path))
@@ -34,7 +41,9 @@ class LocalFile(object):
                 if exc.errno != errno.EEXIST:
                     raise
 
-        with open(self.path, 'w') as stream:
+        with open(self.path, 'wb') as stream:
+            if encoding and type(body) == str:
+                body = body.encode(encoding)
             stream.write(body)
 
     def exists(self):
@@ -59,7 +68,16 @@ class S3File(object):
         response = self.s3.Object(self.bucket, self.path).get()
         return response['Body']
 
-    def put_contents(self, body):
+    def put_contents(self, body, encoding='utf-8'):
+        """
+        Args:
+            body (str || bytes): contents to put into file object
+            encoding (str): encoding that will be applied if the body is of type str in order
+                            to write the body as bytes
+
+        """
+        if encoding and type(body) == str:
+            body = body.encode(encoding)
         self.s3.Object(self.bucket, self.path).put(Body=body)
 
     def exists(self):
