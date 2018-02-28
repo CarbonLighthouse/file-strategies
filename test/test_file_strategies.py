@@ -33,17 +33,28 @@ class TestLocalFile(unittest.TestCase):
         self.assertEqual(subject.dir_path, self.tmp_dir.path)
 
     def test_get_contents(self):
-        """should return contents from local file"""
+        """should return contents as bytes from local file"""
         path = os.path.join(self.tmp_dir.path, 'foo.txt')
         subject = LocalFile(path)
 
         actual = subject.get_contents().getvalue()
-        expected = 'bar'
+        expected = b'bar'
 
         self.assertEqual(actual, expected)
 
-    def test_put_contents(self):
-        """should store contents to local file"""
+    def test_put_byte_contents(self):
+        """should store contents passed in as bytes to local file"""
+        path = os.path.join(self.tmp_dir.path, 'my_dir', 'foo.txt')
+        subject = LocalFile(path)
+
+        subject.put_contents(b'baz')
+        actual = self.tmp_dir.read('my_dir/foo.txt', encoding='utf-8')
+        expected = 'baz'
+
+        self.assertEqual(actual, expected)
+
+    def test_put_str_contents(self):
+        """should store contents passed in as str to local file"""
         path = os.path.join(self.tmp_dir.path, 'my_dir', 'foo.txt')
         subject = LocalFile(path)
 
@@ -98,8 +109,23 @@ class TestS3File(unittest.TestCase):
         self.assertEqual(actual, expected)
         s3.Object.assert_called_once_with(bucket, path)
 
-    def test_put_contents(self):
-        """should put contents to an s3 object"""
+    def test_put_byte_contents(self):
+        """should put byte contents to an s3 object"""
+        path = 'foo.txt'
+        bucket = 'test_bucket'
+        s3 = MagicMock()
+        object_mock = MagicMock()
+        s3.Object.return_value = object_mock
+
+        subject = S3File(path, bucket, s3)
+
+        subject.put_contents(b'test_body')
+
+        s3.Object.assert_called_once_with(bucket, path)
+        object_mock.put.assert_called_once_with(Body=b'test_body')
+
+    def test_put_str_contents(self):
+        """should put str contents to an s3 object"""
         path = 'foo.txt'
         bucket = 'test_bucket'
         s3 = MagicMock()
@@ -111,7 +137,7 @@ class TestS3File(unittest.TestCase):
         subject.put_contents('test_body')
 
         s3.Object.assert_called_once_with(bucket, path)
-        object_mock.put.assert_called_once_with(Body='test_body')
+        object_mock.put.assert_called_once_with(Body=b'test_body')
 
     def test_s3_key_exists(self):
         """should return true if an s3 key exists"""
