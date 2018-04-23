@@ -1,4 +1,4 @@
-boto3==1.5.27
-testfixtures==5.4.0
+boto3==1.7.6
+testfixtures==6.0.1
 flake8
 coverage
