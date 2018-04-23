@@ -14,6 +14,6 @@ setup(
     packages=find_packages(),
     python_requires='>=3',
     install_requires=[
-        'boto3>=1.4.7, <=1.6.0'
+        'boto3>=1.4.7, <2.0.0'
     ]
 )
